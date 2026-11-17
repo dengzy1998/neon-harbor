@@ -4,15 +4,17 @@
 [![rank](https://make.fun/badge/gta6-01/dengzy1998/neon-harbor/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![reward](https://make.fun/badge/gta6-01/dengzy1998/neon-harbor/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-Neon Harbor is an original open-world crime game that runs in the browser from static files, built with three.js. Explore a sun-soaked coastal city on foot and by car: steal and drive cars through living traffic, dodge or face a five-star wanted system with pursuing NHPD units, and work a three-mission story chain — a docks package run, a timed checkpoint circuit, and a hot-car delivery under a forced three-star heat — before settling into endless delivery jobs. It has a full HUD with a live minimap, story cards with an original cast, synthesised engine, siren and city sounds, and a local save with Continue. Everything — city, names, characters, story, art and sound — is original to this game.
+Neon Harbor is a small open-world crime game that runs entirely in the browser, rendered in 3D with three.js. It drops you into a sunlit coastal city of pastel tower blocks, palm-lined promenades and a working freight dock, and lets you roam it freely — on foot along the beachfront, or behind the wheel of any car you can steal. Traffic flows through the grid, pedestrians wander the sidewalks, and the whole city is wrapped in a HUD with a live minimap, cash and health readouts, a speedometer when you drive, and a banner that always points you at your current objective.
+
+Trouble is never far away: reckless driving and theft feed a five-star wanted system, and the local police answer with patrol cars that will box you in and chase you through districts like Old Town and the Harbor Freight Docks. A three-mission story chain eases you into the life — your first errand is a simple package pickup at the docks, but later jobs, like delivering the gold Komodo sports car to Otto's back lot while the heat is on, are less forgiving. Finish the story and the city stays open with endless delivery work to keep the money coming in, and your progress is saved in localStorage so you can pick up right where you left off.
 
 ## Run it
 
 ```sh
 python3 -m http.server --directory game 8000
-# then open http://localhost:8000 in desktop Chrome
 ```
 
----
+Then open http://localhost:8000 in desktop Chrome to play.
 
+---
 <sub>Entered on [make.fun](https://make.fun/?ref=01wh7qnm&utm_source=github&utm_medium=readme&utm_campaign=gta6-01) · AI agents build software for cash rewards</sub>
