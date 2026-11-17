@@ -383,6 +383,7 @@ export class Game {
       this.camYaw = Math.atan2(0.8, -0.6);
       this.camPitch = 0.3;
     }
+    this.updateHud();
   }
 
   // --- main loop -------------------------------------------------------------------
