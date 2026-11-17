@@ -44,17 +44,21 @@ export class PoliceSystem {
     this.model = CAR_MODELS[0];
   }
 
+  starsFor(heat) {
+    if (heat < 10) return 0;
+    return Math.min(5, Math.ceil(heat / 55));
+  }
+
   addCrime(kind, _x, _z) {
     const pts = CRIME_POINTS[kind] ?? 10;
-    this.heat = Math.min(260, this.heat + pts);
-    this.stars = Math.max(this.stars, Math.min(5, Math.floor(this.heat / 50) + (this.heat >= 15 ? 1 : 0)));
-    if (this.heat >= 15 && this.stars === 0) this.stars = 1;
+    this.heat = Math.min(275, this.heat + pts);
+    this.stars = Math.max(this.stars, this.starsFor(this.heat));
     this.lastSeen = 0;
   }
 
   setWanted(stars) {
     this.stars = Math.max(this.stars, stars);
-    this.heat = Math.max(this.heat, stars * 50);
+    this.heat = Math.max(this.heat, stars * 55);
     this.lastSeen = 0;
   }
 
@@ -146,8 +150,7 @@ export class PoliceSystem {
     if (seen) this.lastSeen = 0; else this.lastSeen += dt;
     if (this.lastSeen > TUNING.wantedDecaySeconds && this.heat > 0) {
       this.heat = Math.max(0, this.heat - 7 * dt);
-      this.stars = this.heat >= 65 ? Math.min(5, Math.floor(this.heat / 50) + 1) : (this.heat >= 15 ? 1 : 0);
-      if (this.heat < 15) this.stars = 0;
+      this.stars = this.starsFor(this.heat);
     }
 
     const want = this.desiredUnits();

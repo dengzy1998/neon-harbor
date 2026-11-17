@@ -46,10 +46,10 @@ function makeRoadTexture() {
   const c = document.createElement('canvas');
   c.width = 64; c.height = 128;
   const g = c.getContext('2d');
-  g.fillStyle = '#3d454e'; g.fillRect(0, 0, 64, 128);
-  g.fillStyle = '#f5d76e';
-  g.fillRect(29, 8, 6, 46);
-  g.fillRect(29, 74, 6, 46);
+  g.fillStyle = '#2e353d'; g.fillRect(0, 0, 64, 128);
+  g.fillStyle = '#ffd94d';
+  g.fillRect(28, 6, 8, 48);
+  g.fillRect(28, 74, 8, 48);
   g.fillStyle = 'rgba(255,255,255,0.75)';
   g.fillRect(2, 0, 3, 128); g.fillRect(59, 0, 3, 128);
   const tex = new THREE.CanvasTexture(c);
@@ -331,7 +331,7 @@ export function buildCity(scene, rng) {
   for (let i = 0; i < 14; i++) {
     const s = rng.range(2.2, 3.6);
     const crate = new THREE.Mesh(unitBox, rng.pick(crateMats));
-    const cx = rng.range(232, 262), cz = rng.range(-196, -146);
+    const cx = rng.range(232, 262), cz = rng.range(-198, -154);
     crate.position.set(cx, 0, cz);
     crate.scale.set(s, s, s);
     crate.rotation.y = rng.range(0, 3);

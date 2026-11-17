@@ -47,7 +47,7 @@ export const TUNING = {
 export const PLACES = {
   // Named spots the story and the systems use. x east, z south, y up.
   marina: { x: 238, z: 150, name: 'Coral Marina' },
-  docks: { x: 252, z: -168, name: 'Ferris Freight Docks' },
+  docks: { x: 246, z: -140, name: 'Ferris Freight Docks' },
   club: { x: -196, z: 58, name: 'Club Sable' },
   hideout: { x: -232, z: -204, name: 'Breakwater Garage' },
   hospital: { x: -58, z: -232, name: 'Harbor General Hospital' },

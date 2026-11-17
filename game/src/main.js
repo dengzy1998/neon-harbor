@@ -472,59 +472,70 @@ function stageScene(name) {
   hud.setCash(1240);
   state = 'play';
   if (name === 'cover') {
-    player.teleport(247, 128, -Math.PI / 2);
-    cameraYaw = -Math.PI / 2;
-    camera.position.set(258, 3.4, 140);
+    player.teleport(263, 138, -2.29);
+    cameraYaw = -2.29;
     hud.setObjective('FIRST RUN', 'Pick up the package at Ferris Freight Docks', '386 m');
     hud.toast('Welcome to Neon Harbor');
   } else if (name === 'drive') {
     const car = traffic.parked[0];
-    car.mesh.position.set(-140, 0, 58 + 3.4);
+    car.mesh.position.set(-197, 0, 58 + 3.4);
     car.heading = Math.PI / 2;
     car.mesh.rotation.y = car.heading;
-    car.speed = 15;
+    car.speed = 13;
     player.enterCar(car);
     cameraYaw = Math.PI / 2;
     hud.setObjective('NEON CIRCUIT', 'Hit every checkpoint before the clock dies', 'Checkpoint 3/6 · 128 m · 42s');
   } else if (name === 'chase') {
     const car = traffic.parked[1];
-    car.mesh.position.set(-61.4, 0, -110);
+    car.mesh.position.set(-61.4, 0, -58);
     car.heading = 0;
     car.mesh.rotation.y = 0;
-    car.speed = 19;
+    car.speed = 17;
     player.enterCar(car);
     cameraYaw = 0;
     police.setWanted(3);
-    const spots = [[-61.4, -126], [-53, -140], [-69, -148]];
+    const spots = [[-61.4, -79], [-54, -89], [-69, -95]];
     for (const [x, z] of spots) {
       police.spawnUnit(player.pos);
       const u = police.units[police.units.length - 1];
-      if (u) { u.mesh.position.set(x, 0, z); u.heading = 0; u.speed = 17; }
+      if (u) { u.mesh.position.set(x, 0, z); u.heading = 0; u.speed = 16; }
     }
     hud.setObjective('HOT PROPERTY', 'Get the gold Komodo to the Breakwater Garage', '342 m');
   } else if (name === 'mission') {
     missions.startStoryMission(0);
-    player.teleport(241, -150, Math.atan2(11, -18));
+    player.teleport(237, -153, Math.atan2(9, 13));
     cameraYaw = player.heading;
   }
 }
 
-if (staged) stageScene(sceneName);
+if (staged) {
+  stageScene(sceneName);
+  // A handle for the maker's own screenshot harness to verify the staged state.
+  window.__game = { player, traffic, police, missions };
+} else if (params.get('debug')) {
+  window.__game = { player, traffic, police, missions };
+}
 
 // --- the loop ---
 let last = performance.now();
 let frames = 0;
+let stagedTime = 0;
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   time += dt;
   city.update(dt, time);
-  if (state === 'play') stepPlay(dt);
+  if (staged) {
+    // A staged scene plays just long enough to feel alive, then holds its
+    // composition so the maker's screenshot is the scene that was staged.
+    stagedTime += dt;
+    if (stagedTime < 1.4 && state === 'play') stepPlay(dt);
+    if (stagedTime > 1.55) window.__shotReady = true;
+  } else if (state === 'play') stepPlay(dt);
   else if (state === 'menu') stepAmbient(dt);
   updateCamera(dt);
   renderer.render(stage, camera);
   frames += 1;
-  if (staged && frames > 45) window.__shotReady = true;
 }
 requestAnimationFrame(frame);
