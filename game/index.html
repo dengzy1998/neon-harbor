@@ -1,159 +1,182 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon Harbor — an open-world crime game</title>
-<link rel="icon" href="data:,">
+<title>Neon Harbor — an original open-world crime game</title>
 <style>
   :root {
-    --ink: #0b1620;
-    --panel: rgba(8, 22, 34, 0.82);
-    --coral: #ff6b5e;
-    --gold: #ffc44d;
-    --teal: #2ee6c8;
-    --paper: #fdf6e9;
+    --ink: #0e2233;
+    --panel: rgba(8, 26, 40, 0.72);
+    --cyan: #22d3ee;
+    --pink: #f471b5;
+    --gold: #fbbf24;
+    --paper: #f4fbff;
   }
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #79c7e3; font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; }
-  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0b1c2c; }
+  body { font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; color: var(--paper); }
+  #game-canvas { position: fixed; inset: 0; display: block; }
 
   /* ---------- HUD ---------- */
-  #hud { position: fixed; inset: 0; pointer-events: none; color: var(--paper); }
-  #hud.hidden, .hidden { display: none !important; }
-  #minimap-wrap { position: absolute; left: 18px; top: 18px; width: 188px; height: 188px; border-radius: 50%;
-    border: 3px solid rgba(253, 246, 233, 0.85); overflow: hidden; box-shadow: 0 6px 24px rgba(4, 20, 32, 0.45); background: #123; }
+  #hud { position: fixed; inset: 0; pointer-events: none; display: none; }
+  #hud.on { display: block; }
+  #minimap-wrap {
+    position: absolute; left: 18px; bottom: 18px; width: 196px; height: 196px;
+    border: 3px solid rgba(244, 251, 255, 0.85); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45); background: #123;
+  }
   #minimap { width: 100%; height: 100%; display: block; }
-  #wanted { position: absolute; right: 22px; top: 16px; font-size: 30px; letter-spacing: 4px; color: rgba(253,246,233,0.28);
-    text-shadow: 0 2px 8px rgba(4,20,32,0.6); text-align: right; line-height: 1; }
-  #wanted .lit { color: var(--gold); }
-  #wanted .flash { color: var(--coral); }
-  #cash { position: absolute; right: 22px; top: 54px; font-size: 26px; font-weight: 700; color: var(--teal);
-    text-shadow: 0 2px 8px rgba(4,20,32,0.65); text-align: right; }
-  #cash-label { display: block; font-size: 11px; letter-spacing: 3px; color: var(--paper); opacity: 0.75; font-weight: 600; }
-  #vitals { position: absolute; left: 22px; bottom: 22px; width: 230px; }
-  .bar-label { font-size: 11px; letter-spacing: 3px; font-weight: 700; text-shadow: 0 1px 6px rgba(4,20,32,0.7); margin-bottom: 4px; }
-  .bar { height: 13px; border-radius: 7px; background: rgba(8, 22, 34, 0.55); border: 1px solid rgba(253,246,233,0.5); overflow: hidden; }
-  .bar > div { height: 100%; width: 100%; transition: width 0.15s linear; }
-  #health-fill { background: linear-gradient(90deg, #ff6b5e, #ffc44d); }
-  #busted-wrap { margin-top: 8px; }
-  #busted-fill { background: linear-gradient(90deg, #57b6ff, #e8f4ff); width: 0%; }
-  #speedo { position: absolute; right: 24px; bottom: 20px; text-align: right; text-shadow: 0 2px 8px rgba(4,20,32,0.7); }
-  #speedo .num { font-size: 44px; font-weight: 800; line-height: 0.95; }
-  #speedo .unit { font-size: 12px; letter-spacing: 3px; font-weight: 700; opacity: 0.85; }
-  #objective { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); max-width: 560px; text-align: center;
-    background: var(--panel); border: 1px solid rgba(255, 196, 77, 0.55); border-radius: 12px; padding: 9px 20px 10px; }
-  #objective .obj-title { font-size: 11px; letter-spacing: 3px; color: var(--gold); font-weight: 800; }
-  #objective .obj-text { font-size: 16px; font-weight: 600; margin-top: 2px; }
-  #objective .obj-dist { font-size: 12px; color: var(--teal); font-weight: 700; margin-top: 1px; }
-  #prompt { position: absolute; bottom: 118px; left: 50%; transform: translateX(-50%); background: var(--panel);
-    border-radius: 999px; padding: 8px 20px; font-size: 15px; font-weight: 600; border: 1px solid rgba(253,246,233,0.35); }
-  #prompt b { color: var(--gold); }
-  #toast { position: absolute; bottom: 168px; left: 50%; transform: translateX(-50%); font-size: 19px; font-weight: 800;
-    color: var(--gold); text-shadow: 0 2px 10px rgba(4,20,32,0.8); letter-spacing: 0.4px; text-align: center; }
-  #damage-vignette { position: fixed; inset: 0; pointer-events: none; opacity: 0;
-    background: radial-gradient(ellipse at center, transparent 55%, rgba(214, 30, 30, 0.55) 100%); }
+  #stats {
+    position: absolute; right: 18px; top: 14px; text-align: right;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+  }
+  #stars { font-size: 30px; letter-spacing: 3px; color: rgba(255,255,255,0.28); line-height: 1; }
+  #stars .lit { color: var(--gold); text-shadow: 0 0 9px rgba(251, 191, 36, 0.9); }
+  #cash { font-size: 27px; font-weight: 700; color: #7bf1a8; margin-top: 2px; }
+  #district { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #cfeeff; opacity: 0.9; }
+  #health-wrap {
+    position: absolute; right: 18px; bottom: 22px; width: 210px; height: 15px;
+    background: rgba(0,0,0,0.55); border: 2px solid rgba(244,251,255,0.7); border-radius: 8px; overflow: hidden;
+  }
+  #health { height: 100%; width: 100%; background: linear-gradient(90deg, #f43f5e, #fb923c); transition: width 0.18s; }
+  #speedo {
+    position: absolute; right: 22px; bottom: 46px; font-size: 22px; font-weight: 700;
+    color: var(--paper); text-shadow: 0 2px 6px rgba(0,0,0,0.7); display: none;
+  }
+  #objective {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+    max-width: 620px; padding: 9px 20px; border-radius: 999px; background: var(--panel);
+    border: 1px solid rgba(34, 211, 238, 0.55); font-size: 16px; text-align: center; display: none;
+  }
+  #objective b { color: var(--gold); }
+  #objective .dist { color: var(--cyan); font-weight: 700; }
+  #prompt {
+    position: absolute; left: 50%; bottom: 128px; transform: translateX(-50%);
+    padding: 8px 18px; border-radius: 10px; background: var(--panel); font-size: 17px; display: none;
+  }
+  #prompt kbd {
+    background: #e8f6ff; color: var(--ink); border-radius: 5px; padding: 1px 8px;
+    font-family: inherit; font-weight: 800; margin-right: 6px;
+  }
+  #busted-wrap {
+    position: absolute; left: 50%; top: 58%; transform: translateX(-50%);
+    width: 260px; display: none; text-align: center;
+  }
+  #busted-label { font-size: 15px; letter-spacing: 4px; color: #fda4af; text-shadow: 0 2px 8px #000; }
+  #busted-bar { height: 10px; margin-top: 5px; background: rgba(0,0,0,0.6); border: 1px solid #fda4af; border-radius: 6px; overflow: hidden; }
+  #busted-fill { height: 100%; width: 0%; background: #f43f5e; }
+  #toast {
+    position: absolute; left: 50%; top: 84px; transform: translateX(-50%);
+    font-size: 21px; font-weight: 700; color: var(--gold); text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    opacity: 0; transition: opacity 0.3s; white-space: nowrap;
+  }
 
-  /* ---------- Overlays & menus ---------- */
-  .overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column;
-    background: linear-gradient(180deg, rgba(6, 26, 40, 0.55), rgba(6, 26, 40, 0.78)); color: var(--paper); text-align: center; z-index: 5; }
-  .overlay .card { background: var(--panel); border: 1px solid rgba(46, 230, 200, 0.4); border-radius: 18px; padding: 30px 42px; max-width: 620px;
-    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5); }
-  h1.logo { font-size: 64px; margin: 0 0 2px; letter-spacing: 2px; font-weight: 900; font-style: italic;
-    background: linear-gradient(92deg, #2ee6c8 5%, #fdf6e9 45%, #ff6b5e 95%); -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 4px 14px rgba(4, 20, 32, 0.55)); }
-  .tagline { font-size: 15px; letter-spacing: 4px; color: var(--gold); font-weight: 700; margin-bottom: 20px; }
-  .btn { pointer-events: auto; display: inline-block; margin: 5px; padding: 12px 34px; border-radius: 999px; border: 2px solid var(--teal);
-    background: rgba(46, 230, 200, 0.12); color: var(--paper); font-size: 17px; font-weight: 800; letter-spacing: 1px; cursor: pointer; }
-  .btn:hover { background: var(--teal); color: var(--ink); }
-  .btn.primary { background: var(--coral); border-color: var(--coral); color: #fff; }
-  .btn.primary:hover { background: #ff8578; color: #fff; }
-  .btn:disabled { opacity: 0.35; cursor: default; }
-  .btn:disabled:hover { background: rgba(46, 230, 200, 0.12); color: var(--paper); }
-  .controls { margin: 18px auto 4px; font-size: 13.5px; line-height: 1.85; color: rgba(253, 246, 233, 0.88); text-align: left; display: inline-block; }
-  .controls b { color: var(--gold); display: inline-block; min-width: 118px; }
-  .story-name { color: var(--teal); font-size: 12px; letter-spacing: 3px; font-weight: 800; }
-  .story-text { font-size: 18px; line-height: 1.55; margin: 10px 0 18px; }
-  .big-word { font-size: 72px; font-weight: 900; letter-spacing: 6px; margin: 0 0 6px; }
-  .wasted { color: var(--coral); text-shadow: 0 6px 30px rgba(214, 30, 30, 0.6); }
-  .busted { color: #9fd0ff; text-shadow: 0 6px 30px rgba(60, 120, 220, 0.6); }
-  .fine { font-size: 16px; opacity: 0.9; margin-bottom: 18px; }
-  .checkline { font-size: 14px; margin-top: 14px; opacity: 0.9; }
-  .checkline input { transform: scale(1.25); margin-right: 8px; accent-color: var(--coral); }
-  #fade { position: fixed; inset: 0; background: #04121e; opacity: 0; pointer-events: none; transition: opacity 0.45s ease; z-index: 9; }
+  /* ---------- Screens ---------- */
+  .screen {
+    position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; z-index: 5;
+  }
+  .screen.on { display: flex; }
+  #menu { background: linear-gradient(180deg, rgba(7,32,52,0.25) 0%, rgba(7,32,52,0.78) 78%); }
+  #menu h1 {
+    font-size: 84px; font-weight: 900; letter-spacing: 2px; line-height: 0.95;
+    color: #fff; text-shadow: 0 0 26px rgba(34,211,238,0.75), 0 6px 0 rgba(244,113,181,0.55);
+  }
+  #menu h1 span { color: var(--cyan); }
+  #menu .tag { margin-top: 10px; font-size: 17px; letter-spacing: 4px; text-transform: uppercase; color: #ffe9a8; }
+  .menu-buttons { margin-top: 34px; display: flex; flex-direction: column; gap: 12px; }
+  button {
+    pointer-events: auto; cursor: pointer; font: inherit; font-size: 19px; font-weight: 700;
+    color: var(--ink); background: linear-gradient(180deg, #a5f3fc, #22d3ee);
+    border: none; border-radius: 12px; padding: 12px 42px; box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  button:hover { filter: brightness(1.1); }
+  button.ghost { background: rgba(244,251,255,0.14); color: var(--paper); border: 1px solid rgba(244,251,255,0.5); }
+  button:disabled { opacity: 0.35; cursor: default; }
+  #controls {
+    margin-top: 30px; font-size: 14.5px; line-height: 1.75; color: #dff4ff;
+    background: var(--panel); border-radius: 14px; padding: 14px 26px;
+  }
+  #controls b { color: var(--gold); }
+  #pause, #endcard { background: rgba(5, 18, 30, 0.72); }
+  #pause h2, #endcard h2 { font-size: 52px; letter-spacing: 3px; margin-bottom: 10px; }
+  #endcard h2.bad { color: #fb7185; text-shadow: 0 0 22px rgba(244,63,94,0.6); }
+  #endcard p { font-size: 18px; color: #dff4ff; margin-bottom: 24px; }
+  #storycard { background: rgba(5, 18, 30, 0.55); justify-content: flex-end; padding-bottom: 9vh; }
+  #story-box {
+    max-width: 640px; background: var(--panel); border: 1px solid rgba(244,113,181,0.6);
+    border-radius: 16px; padding: 20px 28px; text-align: left;
+  }
+  #story-who { color: var(--pink); font-weight: 800; letter-spacing: 2px; font-size: 14px; text-transform: uppercase; }
+  #story-text { font-size: 19px; line-height: 1.55; margin-top: 6px; }
+  #story-hint { margin-top: 12px; font-size: 13.5px; color: #9fd8ef; }
+  #mute-btn {
+    position: fixed; right: 18px; top: 118px; z-index: 6; padding: 7px 13px; font-size: 14px;
+    background: var(--panel); color: var(--paper); border: 1px solid rgba(244,251,255,0.4); display: none;
+  }
+  #mute-btn.on { display: block; }
 </style>
+</head>
+<body>
+<canvas id="game-canvas"></canvas>
+
+<div id="hud">
+  <div id="minimap-wrap"><canvas id="minimap" width="196" height="196"></canvas></div>
+  <div id="stats">
+    <div id="stars"></div>
+    <div id="cash">$0</div>
+    <div id="district">Coral Bay</div>
+  </div>
+  <div id="objective"></div>
+  <div id="toast"></div>
+  <div id="prompt"></div>
+  <div id="busted-wrap"><div id="busted-label">BUSTED</div><div id="busted-bar"><div id="busted-fill"></div></div></div>
+  <div id="speedo">0 km/h</div>
+  <div id="health-wrap"><div id="health"></div></div>
+</div>
+
+<button id="mute-btn">Sound: on</button>
+
+<div id="menu" class="screen on">
+  <h1>NEON <span>HARBOR</span></h1>
+  <div class="tag">One city. One courier. Every cop on the bay.</div>
+  <div class="menu-buttons">
+    <button id="new-game">New Game</button>
+    <button id="continue-game">Continue</button>
+  </div>
+  <div id="controls">
+    <b>W A S D</b> move / drive &nbsp;·&nbsp; <b>Mouse</b> camera &nbsp;·&nbsp; <b>Shift</b> run / boost<br>
+    <b>E</b> enter / exit car &nbsp;·&nbsp; <b>F</b> or <b>Click</b> punch &nbsp;·&nbsp; <b>Space</b> handbrake<br>
+    <b>P</b> pause &nbsp;·&nbsp; <b>M</b> mute &nbsp;·&nbsp; Steal cars, run errands, outrun the NHPD.
+  </div>
+</div>
+
+<div id="pause" class="screen">
+  <h2>Paused</h2>
+  <div class="menu-buttons">
+    <button id="resume">Resume</button>
+    <button id="restart" class="ghost">Restart story</button>
+  </div>
+</div>
+
+<div id="storycard" class="screen">
+  <div id="story-box">
+    <div id="story-who"></div>
+    <div id="story-text"></div>
+    <div id="story-hint">Press Enter or click to continue</div>
+  </div>
+</div>
+
+<div id="endcard" class="screen">
+  <h2 id="end-title" class="bad">BUSTED</h2>
+  <p id="end-text"></p>
+  <div class="menu-buttons"><button id="respawn">Carry on</button></div>
+</div>
+
 <script type="importmap">
 { "imports": { "three": "./vendor/three.module.min.js" } }
 </script>
-</head>
-<body>
-<canvas id="scene" aria-label="Neon Harbor: explore the city on foot and by car"></canvas>
-<p id="status" role="status" aria-live="polite"></p>
-
-<div id="hud" class="hidden">
-  <div id="minimap-wrap"><canvas id="minimap" width="376" height="376"></canvas></div>
-  <div id="wanted"></div>
-  <div id="cash"><span id="cash-label">CASH</span><span id="cash-value">$0</span></div>
-  <div id="objective" class="hidden">
-    <div class="obj-title" id="objective-title">OBJECTIVE</div>
-    <div class="obj-text" id="objective-text"></div>
-    <div class="obj-dist" id="objective-dist"></div>
-  </div>
-  <div id="vitals">
-    <div class="bar-label">HEALTH</div>
-    <div class="bar"><div id="health-fill"></div></div>
-    <div id="busted-wrap" class="hidden">
-      <div class="bar-label" style="color:#9fd0ff">BUSTED</div>
-      <div class="bar"><div id="busted-fill"></div></div>
-    </div>
-  </div>
-  <div id="speedo" class="hidden"><div class="num" id="speed-num">0</div><div class="unit">MPH</div></div>
-  <div id="prompt" class="hidden"></div>
-  <div id="toast" class="hidden"></div>
-</div>
-<div id="damage-vignette"></div>
-
-<div id="menu" class="overlay">
-  <h1 class="logo">NEON HARBOR</h1>
-  <div class="tagline">ONE CITY. ONE CREW. NO WAY BACK.</div>
-  <div>
-    <button class="btn primary" id="btn-new">NEW GAME</button>
-    <button class="btn" id="btn-continue">CONTINUE</button>
-  </div>
-  <div class="controls">
-    <div><b>W A S D</b> walk / drive &nbsp;·&nbsp; <b>Mouse</b> look (click the game first)</div>
-    <div><b>Shift</b> run &nbsp;·&nbsp; <b>E</b> enter / exit car &nbsp;·&nbsp; <b>Space</b> handbrake</div>
-    <div><b>F / Click</b> punch &nbsp;·&nbsp; <b>P</b> pause &nbsp;·&nbsp; <b>M</b> mute</div>
-    <div>Steal cars, run jobs for Sable, and whatever you do — don't get caught.</div>
-  </div>
-  <label class="checkline"><input type="checkbox" id="chk-mute"> Mute sound</label>
-</div>
-
-<div id="pause" class="overlay hidden">
-  <div class="card">
-    <h2 style="margin:0 0 14px; letter-spacing:3px;">PAUSED</h2>
-    <button class="btn primary" id="btn-resume">RESUME</button>
-    <button class="btn" id="btn-restart">RESTART DAY</button>
-    <label class="checkline" style="display:block;"><input type="checkbox" id="chk-mute-2"> Mute sound</label>
-  </div>
-</div>
-
-<div id="story" class="overlay hidden">
-  <div class="card">
-    <div class="story-name" id="story-name">SABLE</div>
-    <div class="story-text" id="story-text"></div>
-    <button class="btn primary" id="btn-story">LET'S GO</button>
-  </div>
-</div>
-
-<div id="end" class="overlay hidden">
-  <div class="big-word" id="end-word">WASTED</div>
-  <div class="fine" id="end-fine"></div>
-  <button class="btn primary" id="btn-respawn">RESPAWN</button>
-</div>
-
-<div id="fade"></div>
-
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>

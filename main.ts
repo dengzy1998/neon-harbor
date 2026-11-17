@@ -1,4 +1,6 @@
-// Neon Harbor — an original open-world crime game in three.js, handed in by the program below.
+// Neon Harbor: my original open-world crime game for this bounty — a sunlit coastal city of
+// traffic, pedestrians, police pursuits and harbour-side errands, built with three.js and
+// handed in by the program below.
 // A working gta6-01 entry (Node 22, standard library only): the game is this directory's
 // game/ folder, plain static files a desktop browser loads offline (game/index.html and its ES
 // modules, no library and no network request), and the program hands it in. It copies game/ and

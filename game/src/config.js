@@ -1,103 +1,148 @@
-// Neon Harbor — shared tuning: the city grid, the palette, the people and the story.
-// Everything in the game reads its numbers from here so the world stays coherent.
+// config.js — every shared constant for Neon Harbor: the city grid, the
+// palette, the tuning numbers for driving / heat / police, and the original
+// names and story text the missions speak. One place to tune the whole game.
 
-export const CITY = {
-  blocks: 8,          // building pads per axis
-  pitch: 58,          // metres between street centrelines
-  roadWidth: 15,      // asphalt width of every street
-  sidewalk: 3.2,      // pavement border around each pad
-  get half() { return (this.blocks * this.pitch) / 2; },  // streets run -half..+half
-  beachX: 268,        // sand starts east of here
-  waterX: 300,        // open water starts east of here
-  worldEdge: 520,     // playable clamp for the player
-};
+// --- City grid -------------------------------------------------------------
+// Streets run along these world coordinates on both axes; the blocks between
+// them hold the buildings. The harbour (boardwalk, docks, beach, sea) lies
+// south of the last street, past PROMENADE_Z.
+export const ROAD_LINES = [-160, -120, -80, -40, 0, 40, 80, 120, 160];
+export const ROAD_HALF = 7; // asphalt half-width; sidewalks sit just outside
+export const SIDEWALK = 4;
+export const CITY_EDGE = 186; // streets end here; buildings never pass it
+export const PROMENADE_Z = 176; // boardwalk strip south of the last street
+export const BEACH_Z = 196; // sand from here to the waterline
+export const WATER_Z = 210; // open sea beyond this line
+export const WORLD_SEED = 20261117;
 
+// --- Palette ---------------------------------------------------------------
 export const COLORS = {
-  sky: 0x8ecfe8,
-  fog: 0xa8d4e6,
-  sun: 0xffe3b3,
-  asphalt: 0x3d454e,
+  sky: 0x9fd9f2,
+  fog: 0xbfe3f2,
+  sun: 0xfff1d6,
+  asphalt: 0x35393f,
   asphaltLine: 0xf5d76e,
-  sidewalk: 0xb9c0bd,
-  pad: 0x9db08f,
+  sidewalk: 0xbdb6a6,
+  boardwalk: 0x9a6b4f,
   sand: 0xeed9a4,
-  water: 0x1e7f9e,
-  waterDeep: 0x14607e,
-  palmTrunk: 0x8a6844,
-  palmLeaf: 0x3f9e4d,
-  playerShirt: 0xff6b5e,
+  sea: 0x14919b,
+  seaDeep: 0x0d6e7d,
+  grass: 0x77b255,
+  facade: [0xf6c390, 0xf2f0eb, 0xa8d8ea, 0xf7a8b8, 0xb5e7a0, 0xf9e076, 0xffc09f, 0xd5aaff],
+  roofTrim: [0x22d3ee, 0xf471b5, 0xfbbf24, 0x34d399, 0x818cf8],
   policeBody: 0xf2f4f6,
-  policeTrim: 0x1c2f4a,
+  policeTrim: 0x1d4ed8,
 };
 
-export const TUNING = {
-  walkSpeed: 6.2,
-  runSpeed: 10.5,
-  playerRadius: 0.55,
-  carRadius: 2.3,
-  trafficCount: 20,
-  parkedCount: 26,
-  pedCount: 42,
-  policePerStar: 1.6,   // squad cars scale with the wanted level
-  bustSeconds: 2.6,     // standing still beside police this long ends the chase
-  wantedDecaySeconds: 14,
-  hideoutClearRadius: 7,
+// --- Player / driving tuning ------------------------------------------------
+export const PLAYER = {
+  walkSpeed: 5.2,
+  runSpeed: 8.6,
+  radius: 0.55,
+  maxHealth: 100,
+  punchRange: 1.9,
+  enterRange: 3.4,
+};
+export const CAR = {
+  accel: 15,
+  brake: 26,
+  drag: 0.55,
+  maxReverse: 9,
+  radius: 1.75,
+  crashSpeed: 21, // hitting a building faster than this hurts
 };
 
+// --- Wanted / police tuning ---------------------------------------------------
+export const HEAT = {
+  max: 500,
+  perStar: 100,
+  stealCar: 70,
+  stealWitnessedBonus: 30,
+  hitPed: 85,
+  hitCar: 30,
+  punchPed: 55,
+  scrapeBuilding: 12,
+  decayPerSecond: 5, // while no officer can see the player
+  sightRange: 72,
+};
+export const POLICE = {
+  maxUnits: 6,
+  topSpeed: 31,
+  accel: 17,
+  shootStars: 3,
+  shootRange: 27,
+  shootDamage: 4,
+  shootInterval: 1.15,
+  bustFillSeconds: 2.6, // standing close and slow this long gets you busted
+  bustRange: 6.5,
+};
+
+// --- Places (world positions the story uses) ---------------------------------
 export const PLACES = {
-  // Named spots the story and the systems use. x east, z south, y up.
-  marina: { x: 238, z: 150, name: 'Coral Marina' },
-  docks: { x: 246, z: -140, name: 'Ferris Freight Docks' },
-  club: { x: -196, z: 58, name: 'Club Sable' },
-  hideout: { x: -232, z: -204, name: 'Breakwater Garage' },
-  hospital: { x: -58, z: -232, name: 'Harbor General Hospital' },
-  policeStation: { x: 58, z: 232, name: 'Neon Harbor Police — Central' },
-  goldCarSpot: { x: 116, z: -58, name: 'Palm Court' },
+  spawn: { x: -18, z: 168 }, // on the boardwalk, facing the marina
+  docks: { x: -128, z: 182 }, // freight docks, south-west waterfront
+  club: { x: 84, z: -46 }, // Club Velvetine, east side
+  garage: { x: 128, z: 116 }, // Otto's Garage, south-east
+  policeStation: { x: -52, z: -148 },
+  hospital: { x: 46, z: -148 },
+  hideout: { x: 132, z: 124 }, // the garage back lot, mission 3 destination
+};
+
+// --- Names and story -----------------------------------------------------------
+export const NAMES = {
+  city: 'Neon Harbor',
+  hero: 'Reyes Solano',
+  fixer: 'Mara Voss',
+  mechanic: 'Otto Lindqvist',
+  clubOwner: 'Dario Fenn',
+  club: 'Club Velvetine',
+  garage: "Otto's Garage",
+  hospital: 'St. Coral General',
+  police: 'Neon Harbor Police',
 };
 
 export const STORY = {
   intro: {
-    name: 'SABLE — CLUB SABLE, ON THE PHONE',
-    text: 'Jett. You made it to Neon Harbor. I run the jobs in this town and you drive like nobody else, ' +
-      'so here is the deal: do the work, bank the cash, and the city is yours. First run is simple — ' +
-      'Old Ferris left a package at his freight docks. Fetch it, bring it to my club. Try not to scratch the paint.',
+    who: NAMES.fixer,
+    text: 'Reyes. You owe me two favours and I am done waiting. Start small: a package is sitting on the freight docks, and Dario at Club Velvetine wants it before sunset. Bring it to him clean and we talk money.',
   },
-  missions: [
-    {
-      id: 'first-run',
-      title: 'FIRST RUN',
-      giver: 'SABLE',
-      brief: 'Ferris swears the package is legal. Ferris also swears he invented the moon. Pick it up at the docks, bring it home to Club Sable.',
-      reward: 500,
-    },
-    {
-      id: 'neon-circuit',
-      title: 'NEON CIRCUIT',
-      giver: 'SABLE',
-      brief: 'A collector named Ivo is timing drivers tonight. Hit every checkpoint before the clock dies and he pays in cash, no questions. Show him what a Harbor driver looks like.',
-      reward: 800,
-    },
-    {
-      id: 'hot-property',
-      title: 'HOT PROPERTY',
-      giver: 'SABLE',
-      brief: 'There is a gold Komodo GT sitting at Palm Court with someone else\'s name on the papers. Bring it to the Breakwater Garage. The owner will call it in, so expect company — three stars of it.',
-      reward: 1500,
-    },
-  ],
-  outro: {
-    name: 'SABLE — CLUB SABLE',
-    text: 'That is the Harbor way, Jett. The crew eats tonight because of you. The city is open now: ' +
-      'delivery boards pop up all over town, and they pay by the mile. Stay fast, stay free.',
+  afterFirst: {
+    who: NAMES.fixer,
+    text: 'Clean work. Now something louder. The Neon Circuit is an unsanctioned sprint the harbour kids run at dusk — six lights, one clock. Win it and the whole waterfront learns your name.',
   },
-  jobGivers: ['Sable', 'Ferris', 'Ivo the Collector', 'Marisol at the Marina', 'Big Tuna', 'The Night Clerk'],
+  afterSecond: {
+    who: NAMES.mechanic,
+    text: 'Otto here. A gold Komodo GT just rolled off a transporter at the docks and its owner is... let us say fictional. Drive it to my back lot. The police will object. That is the job.',
+  },
+  afterThird: {
+    who: NAMES.fixer,
+    text: 'You are officially a harbour legend, Reyes. Debts cleared. The city is yours now — Mara will keep sending delivery work your way whenever you want it.',
+  },
 };
 
-export const CAR_MODELS = [
-  { name: 'Komodo GT', topSpeed: 46, accel: 26, grip: 3.4, colors: [0xd94848, 0x2e6fd8, 0xf2b13d, 0x37b06f, 0xe8e8ec, 0x30343c] },
-  { name: 'Pelican Wagon', topSpeed: 36, accel: 20, grip: 3.0, colors: [0x7fb3d5, 0xc0c6cc, 0x8e6fc8, 0xd97b29] },
-  { name: 'Sunset Cabrio', topSpeed: 42, accel: 24, grip: 3.2, colors: [0xff7e47, 0xffd23d, 0x47c2ff, 0xff5e8a] },
-  { name: 'Harbor Hauler', topSpeed: 32, accel: 17, grip: 2.6, colors: [0x9aa5ad, 0x5d737e, 0xb5533c] },
+export const MISSIONS = [
+  {
+    id: 'package',
+    title: 'First Errand',
+    giver: NAMES.fixer,
+    brief: 'Pick up the package at the freight docks.',
+    reward: 600,
+  },
+  {
+    id: 'circuit',
+    title: 'Neon Circuit',
+    giver: NAMES.fixer,
+    brief: 'Run the six circuit lights against the clock.',
+    reward: 900,
+    timeLimit: 105,
+  },
+  {
+    id: 'hotcar',
+    title: 'Hot Property',
+    giver: NAMES.mechanic,
+    brief: 'Steal the gold Komodo GT at the docks and deliver it to Otto\u2019s back lot.',
+    reward: 1500,
+  },
 ];
 
 export const SAVE_KEY = 'neon-harbor-save-v1';
