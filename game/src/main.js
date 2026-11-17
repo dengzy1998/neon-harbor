@@ -382,8 +382,8 @@ function stepPlay(dt) {
       vignetteFlash = Math.max(vignetteFlash, 0.35);
       if (impact > 19) player.damage((impact - 15) * 1.15);
     }
-    // Car on car.
-    for (const other of [...traffic.allCars(), ...police.units]) {
+    // Car on car (held off in a staged scene: nothing may shove the tableau).
+    for (const other of staged ? [] : [...traffic.allCars(), ...police.units]) {
       if (other === car) continue;
       const dx = other.mesh.position.x - car.mesh.position.x;
       const dz = other.mesh.position.z - car.mesh.position.z;
@@ -398,20 +398,25 @@ function stepPlay(dt) {
     if (player.health <= 0) { endRun('wasted'); return; }
   }
 
-  traffic.update(dt, player.inCar);
-  // Police cars bump the world too.
-  for (const u of police.units) {
-    for (const other of traffic.allCars()) {
-      const dx = other.mesh.position.x - u.mesh.position.x;
-      const dz = other.mesh.position.z - u.mesh.position.z;
-      if (dx * dx + dz * dz < 30) collideCars(u, other);
+  // In a staged scene the other actors hold their marks: the tableau the
+  // maker composed is the one that gets screenshotted, every time.
+  let nearest = Infinity;
+  if (!staged) {
+    traffic.update(dt, player.inCar);
+    // Police cars bump the world too.
+    for (const u of police.units) {
+      for (const other of traffic.allCars()) {
+        const dx = other.mesh.position.x - u.mesh.position.x;
+        const dz = other.mesh.position.z - u.mesh.position.z;
+        if (dx * dx + dz * dz < 30) collideCars(u, other);
+      }
     }
+
+    const allCars = [...traffic.allCars(), ...police.units];
+    peds.update(dt, buildThreats(), allCars);
+
+    ({ nearest } = police.update(dt, { pos: player.pos, speed: player.speed, inCar: !!player.inCar }));
   }
-
-  const allCars = [...traffic.allCars(), ...police.units];
-  peds.update(dt, buildThreats(), allCars);
-
-  const { nearest } = police.update(dt, { pos: player.pos, speed: player.speed, inCar: !!player.inCar });
   sound.siren(nearest, police.stars, dt);
   sound.engine(player.inCar ? Math.abs(player.inCar.speed) / player.inCar.model.topSpeed : 0, !!player.inCar && state === 'play');
 
@@ -494,7 +499,7 @@ function stageScene(name) {
     player.enterCar(car);
     cameraYaw = 0;
     police.setWanted(3);
-    const spots = [[-61.4, -79], [-54, -89], [-69, -95]];
+    const spots = [[-54.5, -36], [-68.5, -34], [-61.4, -58]];
     for (const [x, z] of spots) {
       police.spawnUnit(player.pos);
       const u = police.units[police.units.length - 1];
@@ -511,9 +516,9 @@ function stageScene(name) {
 if (staged) {
   stageScene(sceneName);
   // A handle for the maker's own screenshot harness to verify the staged state.
-  window.__game = { player, traffic, police, missions };
+  window.__game = { player, traffic, police, missions, camera, stage };
 } else if (params.get('debug')) {
-  window.__game = { player, traffic, police, missions };
+  window.__game = { player, traffic, police, missions, camera, stage };
 }
 
 // --- the loop ---
@@ -531,6 +536,14 @@ function frame(now) {
     // composition so the maker's screenshot is the scene that was staged.
     stagedTime += dt;
     if (stagedTime < 1.4 && state === 'play') stepPlay(dt);
+    // Police lightbars keep strobing in the held tableau.
+    const phase = Math.floor(time * 5) % 2;
+    for (const u of police.units) {
+      const bar = u.mesh.userData.lightbar;
+      if (!bar) continue;
+      bar.redMat.emissiveIntensity = phase ? 2.4 : 0.25;
+      bar.blueMat.emissiveIntensity = phase ? 0.25 : 2.4;
+    }
     if (stagedTime > 1.55) window.__shotReady = true;
   } else if (state === 'play') stepPlay(dt);
   else if (state === 'menu') stepAmbient(dt);

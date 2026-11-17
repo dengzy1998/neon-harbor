@@ -177,11 +177,11 @@ export function buildCity(scene, rng) {
 
   function addBuilding(cx, cz, w, d, h, mat) {
     const m = new THREE.Mesh(unitBox, mat);
-    m.position.set(cx - w / 2, 0, cz - d / 2);
+    m.position.set(cx, 0, cz);
     m.scale.set(w, h, d);
     scene.add(m);
     const roof = new THREE.Mesh(unitBox, roofMat);
-    roof.position.set(cx - w / 2 + 1.5, h, cz - d / 2 + 1.5);
+    roof.position.set(cx, h, cz);
     roof.scale.set(Math.max(2, w - 6), 1.6, Math.max(2, d - 6));
     scene.add(roof);
     colliders.push({ minX: cx - w / 2, maxX: cx + w / 2, minZ: cz - d / 2, maxZ: cz + d / 2 });
@@ -220,11 +220,11 @@ export function buildCity(scene, rng) {
     for (const cz of padCentres) {
       if (landmarkPads.has(`${cx},${cz}`)) continue;
       const walk = new THREE.Mesh(unitBox, sidewalkMat);
-      walk.position.set(cx - 23, 0, cz - 23);
+      walk.position.set(cx, 0, cz);
       walk.scale.set(46, 0.3, 46);
       scene.add(walk);
       const lot = new THREE.Mesh(unitBox, lotMat);
-      lot.position.set(cx - 20, 0.3, cz - 20);
+      lot.position.set(cx, 0.3, cz);
       lot.scale.set(40, 0.22, 40);
       scene.add(lot);
       const style = rng.next();
@@ -237,7 +237,7 @@ export function buildCity(scene, rng) {
         const b = addBuilding(cx, cz, w, d, h, rng.pick(tintMats));
         if (rng.chance(0.55)) {
           const trim = new THREE.Mesh(unitBox, rng.pick(trimMats));
-          trim.position.set(cx - w / 2 - 0.4, h + 1.4, cz - d / 2 - 0.4);
+          trim.position.set(cx, h + 1.4, cz);
           trim.scale.set(w + 0.8, 0.7, d + 0.8);
           scene.add(trim);
         }
@@ -323,7 +323,7 @@ export function buildCity(scene, rng) {
 
   // --- the freight docks: warehouse, crates, a crane ---
   const warehouse = new THREE.Mesh(unitBox, new THREE.MeshLambertMaterial({ color: 0xb5533c, map: winTex }));
-  warehouse.position.set(238, 0, -186);
+  warehouse.position.set(255, 0, -173);
   warehouse.scale.set(34, 13, 26);
   scene.add(warehouse);
   colliders.push({ minX: 238, maxX: 272, minZ: -186, maxZ: -160 });
