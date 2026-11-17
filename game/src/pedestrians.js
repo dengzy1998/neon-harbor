@@ -108,11 +108,17 @@ class Pedestrian {
         if (Math.hypot(s.x - this.pos.x, s.z - this.pos.z) < 15) { threat = s; break; }
       }
     }
-    if (threat && this.state !== 'flee') { this.state = 'flee'; this.fleeTimer = 1.6; }
+    if (threat) {
+      // Remember where the danger is: the flee below outlives the frame
+      // that spotted it, and the threat itself may already be gone.
+      this.fleeFrom = { x: threat.x, z: threat.z };
+      if (this.state !== 'flee') { this.state = 'flee'; this.fleeTimer = 1.6; }
+    }
     if (this.state === 'flee') {
       this.fleeTimer -= dt;
       // Run directly away from the threat, off the road if possible.
-      const dx = this.pos.x - threat.x, dz = this.pos.z - threat.z;
+      const from = this.fleeFrom || this.pos;
+      const dx = this.pos.x - from.x, dz = this.pos.z - from.z;
       const len = Math.hypot(dx, dz) || 1;
       this.pos.x += (dx / len) * 5.2 * dt;
       this.pos.z += (dz / len) * 5.2 * dt;
