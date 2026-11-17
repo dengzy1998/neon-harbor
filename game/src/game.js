@@ -338,13 +338,13 @@ export class Game {
     this.cash = 1240;
     const put = (car, x, z, heading) => { car.pos.set(x, 0, z); car.heading = heading; car.speed = 0; car.syncMesh(); };
     if (name === 'cover') {
-      this.player.setPosition(-26, 170);
-      this.player.heading = Math.PI;
-      this.player.group.rotation.y = Math.PI;
-      this.camYaw = 0; this.camPitch = 0.3;
-      put(this.traffic.vehicles[0], -6, 160, Math.PI / 2);
-      put(this.traffic.vehicles[1], 42, 163.4, -Math.PI / 2);
-      const spots = [[-32, 166], [-18, 174], [-38, 178]];
+      this.player.setPosition(-64, 176);
+      this.player.heading = Math.PI / 2;
+      this.player.group.rotation.y = Math.PI / 2;
+      this.camYaw = -Math.PI / 2; this.camPitch = 0.3;
+      put(this.traffic.vehicles[0], -30, 156.6, Math.PI / 2);
+      put(this.traffic.vehicles[1], -6, 163.4, -Math.PI / 2);
+      const spots = [[-52, 182], [-76, 186], [-44, 171]];
       this.peds.peds.forEach((p, i) => { if (spots[i]) p.group.position.set(spots[i][0], 0, spots[i][1]); });
     } else if (name === 'drive') {
       const car = createCar(this.scene, 'sedan', 0xef6461, 36.6, 14, 0);
