@@ -110,7 +110,9 @@ export class Missions {
     const t = `<b>${this.currentTitle()}</b> — `;
     switch (this.stage) {
       case 'pickup': return t + 'Pick up the package at the freight docks' + dist;
-      case 'deliver': return t + 'Deliver the package to Club Velvetine' + dist;
+      case 'deliver': return t + (this.missionIndex === 2
+        ? 'Get the Komodo to Otto\u2019s back lot'
+        : 'Deliver the package to Club Velvetine') + dist;
       case 'circuit': return t + `Hit the circuit lights (${this.cpIndex + 1}/6) — <b>${Math.max(0, this.timer).toFixed(0)}s</b>` + dist;
       case 'steal': return t + 'Steal the gold Komodo GT at the docks' + dist;
       case 'job-pickup': return t + 'Collect the parcel' + dist;
