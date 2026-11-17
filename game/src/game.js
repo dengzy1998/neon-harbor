@@ -348,6 +348,7 @@ export class Game {
       this.peds.peds.forEach((p, i) => { if (spots[i]) p.group.position.set(spots[i][0], 0, spots[i][1]); });
     } else if (name === 'drive') {
       const car = createCar(this.scene, 'sedan', 0xef6461, 36.6, 14, 0);
+      car.speed = 9; // speedo dressing for the still
       this.parked.push(car);
       this.driving = car;
       this.player.group.visible = false;
@@ -370,7 +371,8 @@ export class Game {
       this.police.spawnUnit(gold.pos);
       this.police.spawnUnit(gold.pos);
       this.police.spawnUnit(gold.pos);
-      const spots = [[-3.2, -13.5, 0.1], [5.4, -10, -0.15], [-8.5, -14.5, 0.2]];
+      const spots = [[-4.8, -11.8, 0.12], [3.4, -12.6, -0.08], [5.6, -3.5, -0.15]];
+      gold.speed = 13; // speedo dressing: the shot should read as a pursuit
       this.police.units.forEach((u, i) => {
         if (spots[i]) { u.car.pos.set(spots[i][0], 0, spots[i][1]); u.car.heading = spots[i][2]; u.car.syncMesh(); }
       });
