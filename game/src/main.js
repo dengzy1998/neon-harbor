@@ -1,16 +1,16 @@
-// main.js — the bootstrap. It builds the Game on the page's canvas, then
-// either opens on the title menu or, when the URL carries ?scene=<name>,
-// jumps straight into one of the staged scenes the screenshots are taken
-// from (cover, drive, chase, mission). The game handle is exposed for
-// headless play-testing probes.
+import { Game } from './core/Game.js';
 
-import { Game } from './game.js';
-
+// All assets and modules are local; no service or account is required.
 const canvas = document.getElementById('game-canvas');
 const game = new Game(canvas);
+const scene = new URLSearchParams(location.search).get('scene');
 
-const scene = new URLSearchParams(window.location.search).get('scene');
-if (scene) game.stage(scene);
+// Staged scenes use exactly the same systems as normal play.
+if (scene) {
+  game.stage(scene);
+} else {
+  game.start();
+}
 
-game.start();
+// A small inspection surface for local development and screenshots.
 window.__neonHarbor = game;

@@ -4,15 +4,15 @@
     "query": "?scene=chase"
   },
   {
-    "name": "02-drive.jpg",
-    "query": "?scene=drive"
+    "name": "02-heist.jpg",
+    "query": "?scene=heist"
   },
   {
-    "name": "03-city.jpg",
-    "query": "?scene=cover"
+    "name": "03-race.jpg",
+    "query": "?scene=race"
   },
   {
-    "name": "04-mission.jpg",
-    "query": "?scene=mission"
+    "name": "04-map.jpg",
+    "query": "?scene=map"
   }
 ]

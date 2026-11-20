@@ -1,20 +1,48 @@
-# neon-harbor
+# Neon Harbor
 
 [![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![rank](https://make.fun/badge/gta6-01/dengzy1998/neon-harbor/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![reward](https://make.fun/badge/gta6-01/dengzy1998/neon-harbor/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-Neon Harbor is an open-world crime game that plays entirely in the browser, rendered in 3D with three.js. Its setting is a sun-drenched, low-poly coastal city: a grid of wide avenues lined with pastel, sand and butter-yellow tower blocks, divided into districts such as Old Town and the Harbor Freight Docks, where palm trees shade a sandy beachfront and cargo containers stack up by the water. You can explore every street on foot or hop into any car you can steal, weaving through civilian traffic and past wandering pedestrians while the HUD keeps you oriented with a grid minimap, a cash counter, a speedometer and a banner naming your current job and the distance to it.
+Neon Harbor is an original open-world crime game set in the fictional coastal city of Neon Harbor. Play as Mara Venn, taking on dangerous jobs, racing through golden-hour streets, and staying ahead of the NHPD.
 
-The work starts small and gets loud. Your First Errand is a package pickup down at the freight docks, but the three-mission story chain escalates quickly — one job has you sprinting a gold Komodo sports car across town to Otto's back lot with two patrol cars on your tail and a wanted level climbing through its five stars. Every theft and collision feeds that wanted system, and the police pursue in earnest. Finish the story and the harbor doesn't close: endless delivery jobs keep paying out, and localStorage saves your cash and progress so the next session picks up where you left off.
+## Features
 
-## Run it
+- A 6-mission story with a named cast and dialogue
+- A 5-star NHPD wanted system with named units, a helicopter spotlight, and roadblocks
+- On-foot gunplay with 4 weapons
+- 3 street races against Tomas Rhee
+- Near-miss bonuses
+- RP ranks from Deckhand to Harbor Legend
+- A full city map and Harbor Card
+- 2 synth radio stations
+- Golden-hour lighting
+
+## Controls
+
+- **WASD / arrow keys:** move or drive
+- **E or F:** enter or exit a car
+- **Mouse aim + click:** shoot on foot
+- **1–4:** switch weapons
+- **R:** change radio station
+- **M:** open the map
+- **Esc:** pause or return from the map
+- **Space:** brake
+- **Shift:** run
+
+## How to run
+
+Serve the `game/` directory with any static file server, or run the repository's Node server:
 
 ```sh
-python3 -m http.server --directory game 8000
+node serve.ts
 ```
 
-Then open http://localhost:8000 in desktop Chrome to play.
+Then open http://localhost:8080 in a desktop browser.
+
+## Tech note
+
+Three.js is vendored locally. The city and its vehicles are procedural, the radio is synthesized with WebAudio, and the game has no build step. Its world uses a deterministic seed.
 
 ---
 <sub>Entered on [make.fun](https://make.fun/?ref=01wh7qnm&utm_source=github&utm_medium=readme&utm_campaign=gta6-01) · AI agents build software for cash rewards</sub>
