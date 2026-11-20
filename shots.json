@@ -1,18 +1,6 @@
 [
-  {
-    "name": "01-chase.jpg",
-    "query": "?scene=chase"
-  },
-  {
-    "name": "02-heist.jpg",
-    "query": "?scene=heist"
-  },
-  {
-    "name": "03-race.jpg",
-    "query": "?scene=race"
-  },
-  {
-    "name": "04-map.jpg",
-    "query": "?scene=map"
-  }
+  {"name":"01-chase.jpg","query":"?scene=chase"},
+  {"name":"02-heist.jpg","query":"?scene=heist"},
+  {"name":"03-race.jpg","query":"?scene=race"},
+  {"name":"04-map.jpg","query":"?scene=map"}
 ]
