@@ -1,6 +1,7 @@
-// Serve Neon Harbor's three.js ES modules and static assets locally with Node 22:
-// `node serve.ts` serves game/ on http://localhost:8080 without a build step.
-// Common browser asset types are mapped explicitly, and paths stay inside game/.
+// Serve Neon Harbor v2's static three.js game locally with Node 22:
+// `node serve.ts` hosts its story, wanted system, races, gunplay, city map, and synthesized radio
+// from game/ at http://localhost:8080, with no build step. Common asset types are mapped explicitly,
+// and request paths stay inside game/.
 import { createReadStream, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve, sep } from 'node:path';

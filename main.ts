@@ -1,6 +1,8 @@
-// Neon Harbor is an original three.js open-world crime game set in a sunlit coastal city.
-// This deterministic Node 22 build copies the static game and its screenshots to the output
-// directory, then writes dossier.json with the vendored make.fun game library.
+// Neon Harbor is an original three.js open-world crime game starring Mara Venn. Its six-mission
+// story, named cast, five-star NHPD response, street races, weapon progression, contacts, city map,
+// synth radio, and golden-hour city are bundled as static game assets.
+// This deterministic Node 22 build copies game/ and screenshots/ to the output directory, then
+// writes dossier.json with the vendored make.fun game library.
 //
 // Serve it locally with `node serve.ts`, then open http://localhost:8080.
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
